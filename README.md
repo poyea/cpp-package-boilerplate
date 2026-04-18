@@ -1,4 +1,4 @@
-# cpp-package-boilerplate
+# cpp-package-boilerplate [![ci](https://github.com/poyea/cpp-package-boilerplate/actions/workflows/ci.yml/badge.svg)](https://github.com/poyea/cpp-package-boilerplate/actions/workflows/ci.yml)
 
 Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainers, Docker, and GitHub Actions.
 
@@ -20,7 +20,7 @@ Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainer
 |---|---|---|
 | CMake | 3.28 | Build system |
 | GCC | 13 | C++ compiler (Linux/Windows) |
-| Clang | 17 | C++ compiler (alternative) |
+| Clang | 18 | C++ compiler (alternative) |
 | AppleClang | 16 | C++ compiler (macOS) |
 | MSVC | 19.38 (VS 2022 17.8) | C++ compiler (Windows) |
 | Ninja | 1.11 | Build tool |
