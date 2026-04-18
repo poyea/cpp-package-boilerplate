@@ -39,3 +39,39 @@
 
 # debug information files
 *.dwo
+
+# Build directories
+/build/
+/cmake-build-*/
+/out/
+
+# CMake
+CMakeUserPresets.json
+.cache/
+
+# Editor settings
+.idea/
+.vscode/
+
+# Documentation output
+/docs/site/
+/docs/html/
+/docs/latex/
+
+# Tooling output
+compile_commands.json
+
+# Profiling output
+perf.data
+perf.data.old
+callgrind.out.*
+
+# Benchmark output
+benchmark_results.json
+benchmark_results.csv
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
