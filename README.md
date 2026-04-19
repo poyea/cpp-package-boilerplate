@@ -26,7 +26,7 @@ Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainer
 | Ninja | 1.11 | Build tool |
 | Git | 2 | Source control |
 
-**Optional (required per feature):**
+**Feature-specific tools:**
 
 | Tool | Purpose |
 |---|---|
@@ -54,9 +54,7 @@ ctest --preset debug
 
 Or use the helper script:
 
-```bash
-bash scripts/build.sh --preset debug --test
-```
+`bash scripts/build.sh --preset debug --test`
 
 ## Project options
 
@@ -114,9 +112,6 @@ cmake --build build/docs --target docs
 
 The GitHub Pages workflow publishes generated Doxygen output from the default branch.
 
-Note: the docs workflow is currently disabled in `.github/workflows/docs.yml` and can be
-re-enabled by removing the temporary `if: false` guards on `build-docs` and `deploy-docs`.
-
 ## Container workflows
 
 - Dev container: open the repository in a compatible devcontainer client or GitHub Codespaces.
@@ -124,4 +119,4 @@ re-enabled by removing the temporary `if: false` guards on `build-docs` and `dep
 
 ## License
 
-MIT. See `LICENSE`.
+MIT
