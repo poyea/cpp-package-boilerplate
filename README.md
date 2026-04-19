@@ -32,8 +32,8 @@ Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainer
 |---|---|
 | clang-format | Code formatting (`scripts/format.sh`) |
 | Doxygen + Graphviz | API documentation (`BUILD_DOCS=ON`) |
-| Valgrind | Profiling (`scripts/profile.sh callgrind`) |
-| perf | Profiling (`scripts/profile.sh perf`, Linux only) |
+| Valgrind | Profiling (`scripts/build.sh --profile callgrind`) |
+| perf | Profiling (`scripts/build.sh --profile perf`, Linux only) |
 | Docker | Runtime container image |
 
 **Install on Ubuntu/Debian:**
@@ -113,6 +113,9 @@ cmake --build build/docs --target docs
 ```
 
 The GitHub Pages workflow publishes generated Doxygen output from the default branch.
+
+Note: the docs workflow is currently disabled in `.github/workflows/docs.yml` and can be
+re-enabled by removing the temporary `if: false` guards on `build-docs` and `deploy-docs`.
 
 ## Container workflows
 
