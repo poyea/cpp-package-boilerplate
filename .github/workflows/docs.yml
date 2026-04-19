@@ -13,7 +13,6 @@ permissions:
 
 jobs:
   build-docs:
-    if: false  # temporarily disabled
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +30,6 @@ jobs:
           path: build/docs/docs/site/html
 
   deploy-docs:
-    if: false  # temporarily disabled
     needs: build-docs
     runs-on: ubuntu-24.04
     environment:
@@ -40,5 +38,5 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
