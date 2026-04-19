@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build-release-artifacts:
     runs-on: ubuntu-24.04
@@ -21,4 +24,4 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          files: cpp-package-boilerplate-${GITHUB_REF_NAME}.tar.gz
+          files: cpp-package-boilerplate-${{ github.ref_name }}.tar.gz
