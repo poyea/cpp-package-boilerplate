@@ -5,6 +5,7 @@ if(CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY)
     if(CPP_PACKAGE_BOILERPLATE_HEADER_ONLY)
         add_library(${PROJECT_NAME} INTERFACE)
         target_compile_definitions(${PROJECT_NAME} INTERFACE CPP_PACKAGE_BOILERPLATE_HEADER_ONLY=1)
+        target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
         target_include_directories(
             ${PROJECT_NAME}
             INTERFACE
