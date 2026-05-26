@@ -11,6 +11,11 @@ build_docs="false"
 action=""          # benchmark | profile
 profile_tool="perf"
 extra_args=()
+toolchain_args=()
+
+if [[ -n "${VCPKG_ROOT:-}" ]]; then
+    toolchain_args=(-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+fi
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -34,6 +39,7 @@ if [[ "$action" == "benchmark" || "$action" == "profile" ]]; then
     fi
 
     cmake -S . -B "$build_dir" -G Ninja \
+        "${toolchain_args[@]}" \
         -DCMAKE_BUILD_TYPE="$build_type" \
         -DCPP_PACKAGE_BOILERPLATE_BUILD_TESTS=OFF \
         -DCPP_PACKAGE_BOILERPLATE_BUILD_BENCHMARKS=ON \
@@ -65,6 +71,7 @@ case "$preset" in
 esac
 
 cmake -S . -B "$build_dir" -G Ninja \
+    "${toolchain_args[@]}" \
     -DCMAKE_BUILD_TYPE="$build_type" \
     -DCPP_PACKAGE_BOILERPLATE_BUILD_BENCHMARKS=OFF \
     -DCPP_PACKAGE_BOILERPLATE_BUILD_DOCS="$build_docs"

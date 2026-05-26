@@ -31,6 +31,8 @@ Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainer
 | Tool | Purpose |
 |---|---|
 | clang-format | Code formatting (`scripts/format.sh`) |
+| clang-tidy | Static analysis (`scripts/tidy.sh`) |
+| vcpkg | C/C++ dependency management for tests and benchmarks |
 | Doxygen + Graphviz | API documentation (`BUILD_DOCS=ON`) |
 | Valgrind | Profiling (`scripts/build.sh --profile callgrind`) |
 | perf | Profiling (`scripts/build.sh --profile perf`, Linux only) |
@@ -42,6 +44,12 @@ Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainer
 bash scripts/install_tools.sh
 ```
 
+After installation, export `VCPKG_ROOT` if needed:
+
+```bash
+export VCPKG_ROOT="${HOME}/.local/vcpkg"
+```
+
 **Dev container / Codespaces:** all tools are pre-installed — no manual setup needed.
 
 ## Quick start
@@ -50,6 +58,14 @@ bash scripts/install_tools.sh
 cmake --preset debug
 cmake --build --preset debug
 ctest --preset debug
+```
+
+Use vcpkg manifest mode:
+
+```bash
+cmake --preset debug-vcpkg
+cmake --build --preset debug-vcpkg
+ctest --preset debug-vcpkg
 ```
 
 Or use the helper script:
@@ -92,6 +108,16 @@ cmake -S . -B build/full -G Ninja -DCPP_PACKAGE_BOILERPLATE_BUILD_BENCHMARKS=ON 
 ```bash
 bash scripts/format.sh
 bash scripts/format.sh --check
+cmake --build --preset debug --target format
+cmake --build --preset debug --target format-check
+```
+
+## Static analysis
+
+```bash
+bash scripts/tidy.sh
+cmake --preset debug-vcpkg -DCPP_PACKAGE_BOILERPLATE_ENABLE_CLANG_TIDY=ON
+cmake --build --preset debug-vcpkg
 ```
 
 ## Benchmarks and profiling

@@ -22,6 +22,8 @@ option(CPP_PACKAGE_BOILERPLATE_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(CPP_PACKAGE_BOILERPLATE_BUILD_DOCS "Build API documentation" OFF)
 option(CPP_PACKAGE_BOILERPLATE_ENABLE_IPO "Enable interprocedural optimization for release builds" ON)
 option(CPP_PACKAGE_BOILERPLATE_ENABLE_SANITIZERS "Enable AddressSanitizer and UBSan in debug builds" ON)
+option(CPP_PACKAGE_BOILERPLATE_ENABLE_CLANG_TIDY "Run clang-tidy during compilation" OFF)
+option(CPP_PACKAGE_BOILERPLATE_USE_PACKAGE_MANAGER_DEPS "Prefer package manager dependencies over FetchContent" ON)
 
 if(NOT CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY AND NOT CPP_PACKAGE_BOILERPLATE_BUILD_CLI)
     message(FATAL_ERROR "Enable at least one target: library or CLI.")
@@ -42,6 +44,49 @@ elseif(MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.38)
 endif()
 
 include(cmake/CompilerOptions.cmake)
+
+if(CPP_PACKAGE_BOILERPLATE_ENABLE_CLANG_TIDY)
+    find_program(
+        CPP_PACKAGE_BOILERPLATE_CLANG_TIDY_EXE
+        NAMES clang-tidy clang-tidy-20 clang-tidy-19 clang-tidy-18 clang-tidy-17
+        REQUIRED)
+    set(
+        CMAKE_CXX_CLANG_TIDY
+        "${CPP_PACKAGE_BOILERPLATE_CLANG_TIDY_EXE};--config-file=${PROJECT_SOURCE_DIR}/.clang-tidy"
+        CACHE STRING
+        "clang-tidy command"
+        FORCE)
+    message(STATUS "clang-tidy enabled: ${CPP_PACKAGE_BOILERPLATE_CLANG_TIDY_EXE}")
+endif()
+
+find_program(CPP_PACKAGE_BOILERPLATE_CLANG_FORMAT_EXE NAMES clang-format)
+if(CPP_PACKAGE_BOILERPLATE_CLANG_FORMAT_EXE)
+    file(
+        GLOB_RECURSE CPP_PACKAGE_BOILERPLATE_FORMAT_FILES
+        CONFIGURE_DEPENDS
+        ${PROJECT_SOURCE_DIR}/include/*.h
+        ${PROJECT_SOURCE_DIR}/include/*.hpp
+        ${PROJECT_SOURCE_DIR}/src/*.h
+        ${PROJECT_SOURCE_DIR}/src/*.hpp
+        ${PROJECT_SOURCE_DIR}/src/*.cpp
+        ${PROJECT_SOURCE_DIR}/tests/*.h
+        ${PROJECT_SOURCE_DIR}/tests/*.hpp
+        ${PROJECT_SOURCE_DIR}/tests/*.cpp
+        ${PROJECT_SOURCE_DIR}/benchmarks/*.h
+        ${PROJECT_SOURCE_DIR}/benchmarks/*.hpp
+        ${PROJECT_SOURCE_DIR}/benchmarks/*.cpp)
+
+    if(CPP_PACKAGE_BOILERPLATE_FORMAT_FILES)
+        add_custom_target(
+            format
+            COMMAND ${CPP_PACKAGE_BOILERPLATE_CLANG_FORMAT_EXE} -i ${CPP_PACKAGE_BOILERPLATE_FORMAT_FILES}
+            COMMENT "Formatting C++ sources with clang-format")
+        add_custom_target(
+            format-check
+            COMMAND ${CPP_PACKAGE_BOILERPLATE_CLANG_FORMAT_EXE} --dry-run --Werror ${CPP_PACKAGE_BOILERPLATE_FORMAT_FILES}
+            COMMENT "Checking C++ formatting with clang-format")
+    endif()
+endif()
 
 add_subdirectory(src)
 

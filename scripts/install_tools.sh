@@ -19,3 +19,13 @@ sudo apt-get install -y \
     graphviz \
     ninja-build \
     valgrind
+
+if [[ -z "${VCPKG_ROOT:-}" ]]; then
+    export VCPKG_ROOT="${HOME}/.local/vcpkg"
+fi
+
+if [[ ! -d "${VCPKG_ROOT}" ]]; then
+    git clone https://github.com/microsoft/vcpkg.git "${VCPKG_ROOT}"
+fi
+
+"${VCPKG_ROOT}/bootstrap-vcpkg.sh" -disableMetrics

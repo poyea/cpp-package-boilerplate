@@ -1,11 +1,22 @@
-include(FetchContent)
+if(
+    CPP_PACKAGE_BOILERPLATE_USE_PACKAGE_MANAGER_DEPS
+    AND (
+        DEFINED VCPKG_TARGET_TRIPLET
+        OR CMAKE_TOOLCHAIN_FILE MATCHES "vcpkg"
+    ))
+    find_package(GTest CONFIG QUIET)
+endif()
 
-FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/refs/tags/v1.16.0.tar.gz)
+if(NOT TARGET GTest::gtest_main)
+    include(FetchContent)
 
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
+    FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/refs/tags/v1.16.0.tar.gz)
+
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+endif()
 
 add_executable(${PROJECT_NAME}_tests test_mylib.cpp)
 target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME}::${PROJECT_NAME} GTest::gtest_main)

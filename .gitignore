@@ -60,6 +60,7 @@ CMakeUserPresets.json
 
 # Tooling output
 compile_commands.json
+vcpkg_installed/
 
 # Profiling output
 perf.data
