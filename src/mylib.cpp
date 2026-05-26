@@ -4,7 +4,7 @@
 
 namespace cpp_package_boilerplate {
 
-std::string greet(std::string_view name) {
+auto greet(std::string_view name) -> std::string {
     return "hello, " + std::string(name) + " from cpp-package-boilerplate";
 }
 

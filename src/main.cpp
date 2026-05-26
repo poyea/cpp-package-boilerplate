@@ -10,7 +10,7 @@
  *
  * @return Exit status code. Returns `0` on success.
  */
-int main() {
+auto main() -> int {
     std::cout << cpp_package_boilerplate::greet("world") << '\n';
     return 0;
 }

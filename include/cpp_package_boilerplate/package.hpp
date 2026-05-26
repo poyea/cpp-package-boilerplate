@@ -5,18 +5,18 @@
 
 namespace cpp_package_boilerplate {
 
-[[nodiscard]] constexpr int add(int left, int right) noexcept {
+[[nodiscard]] constexpr auto add(int left, int right) noexcept -> int {
     return left + right;
 }
 
-[[nodiscard]] std::string greet(std::string_view name);
+[[nodiscard]] auto greet(std::string_view name) -> std::string;
 
 } // namespace cpp_package_boilerplate
 
 #ifdef CPP_PACKAGE_BOILERPLATE_HEADER_ONLY
 namespace cpp_package_boilerplate {
 
-inline std::string greet(std::string_view name) {
+inline auto greet(std::string_view name) -> std::string {
     return "hello, " + std::string(name) + " from cpp-package-boilerplate";
 }
 
