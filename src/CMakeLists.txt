@@ -5,7 +5,12 @@ if(CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY)
     if(CPP_PACKAGE_BOILERPLATE_HEADER_ONLY)
         add_library(${PROJECT_NAME} INTERFACE)
         target_compile_definitions(${PROJECT_NAME} INTERFACE CPP_PACKAGE_BOILERPLATE_HEADER_ONLY=1)
-        target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
+        set_target_properties(
+            ${PROJECT_NAME}
+            PROPERTIES
+                CXX_STANDARD ${CMAKE_CXX_STANDARD}
+                CXX_STANDARD_REQUIRED ON
+                CXX_EXTENSIONS OFF)
         target_include_directories(
             ${PROJECT_NAME}
             INTERFACE
@@ -40,7 +45,6 @@ endif()
 
 if(CPP_PACKAGE_BOILERPLATE_BUILD_CLI)
     add_executable(${PROJECT_NAME}_cli main.cpp)
-    target_compile_features(${PROJECT_NAME}_cli PRIVATE cxx_std_${CMAKE_CXX_STANDARD})
 
     if(CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY)
         target_link_libraries(${PROJECT_NAME}_cli PRIVATE ${PROJECT_NAME})
