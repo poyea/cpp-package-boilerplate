@@ -18,7 +18,7 @@ Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainer
 
 | Tool | Minimum version | Purpose |
 |---|---|---|
-| CMake | 3.30 | Build system |
+| CMake | 3.31 | Build system |
 | GCC | 14 | C++ compiler (Linux/Windows) |
 | Clang | 18 | C++ compiler (alternative) |
 | AppleClang | 16 | C++ compiler (macOS) |

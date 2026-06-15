@@ -16,7 +16,7 @@ jobs:
       - name: Set up CMake 3.30
         uses: lukka/get-cmake@latest
         with:
-          cmakeVersion: '~3.30.0'
+          cmakeVersion: '~3.31.0'
       - name: Install toolchain
         run: sudo apt-get update && sudo apt-get install -y ninja-build g++-14
       - name: Configure release build
