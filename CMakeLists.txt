@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.30)
 
 project(
     cpp_package_boilerplate
@@ -9,7 +9,7 @@ project(
 include(CTest)
 include(GNUInstallDirs)
 
-set(CMAKE_CXX_STANDARD 23 CACHE STRING "C++ language standard")
+set(CMAKE_CXX_STANDARD 26 CACHE STRING "C++ language standard")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -33,14 +33,14 @@ if(CPP_PACKAGE_BOILERPLATE_HEADER_ONLY AND NOT CPP_PACKAGE_BOILERPLATE_BUILD_LIB
     message(FATAL_ERROR "CPP_PACKAGE_BOILERPLATE_HEADER_ONLY requires CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY=ON.")
 endif()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13)
-    message(FATAL_ERROR "GCC 13 or newer is required for the default C++23 configuration.")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 14)
+    message(FATAL_ERROR "GCC 14 or newer is required for the default C++26 configuration.")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18)
-    message(FATAL_ERROR "Clang 18 or newer is required for the default C++23 configuration.")
+    message(FATAL_ERROR "Clang 18 or newer is required for the default C++26 configuration.")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16)
-    message(FATAL_ERROR "AppleClang 16 or newer is required for the default C++23 configuration.")
-elseif(MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.38)
-    message(FATAL_ERROR "MSVC 19.38 or newer is required for the default C++23 configuration.")
+    message(FATAL_ERROR "AppleClang 16 or newer is required for the default C++26 configuration.")
+elseif(MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.40)
+    message(FATAL_ERROR "MSVC 19.40 (VS 2022 17.10) or newer is required for the default C++26 configuration.")
 endif()
 
 include(cmake/CompilerOptions.cmake)

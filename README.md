@@ -4,7 +4,7 @@ Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainer
 
 ## What this template supports
 
-- C++23 by default, with compiler checks for recent toolchains.
+- C++26 by default, with compiler checks for recent toolchains.
 - Compiled library, header-only library, CLI, or mixed library plus CLI layouts.
 - GoogleTest-based unit tests and Google Benchmark integration.
 - Doxygen documentation generation.
@@ -18,11 +18,11 @@ Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainer
 
 | Tool | Minimum version | Purpose |
 |---|---|---|
-| CMake | 3.28 | Build system |
-| GCC | 13 | C++ compiler (Linux/Windows) |
+| CMake | 3.30 | Build system |
+| GCC | 14 | C++ compiler (Linux/Windows) |
 | Clang | 18 | C++ compiler (alternative) |
 | AppleClang | 16 | C++ compiler (macOS) |
-| MSVC | 19.38 (VS 2022 17.8) | C++ compiler (Windows) |
+| MSVC | 19.40 (VS 2022 17.10) | C++ compiler (Windows) |
 | Ninja | 1.11 | Build tool |
 | Git | 2 | Source control |
 

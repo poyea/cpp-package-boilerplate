@@ -23,10 +23,6 @@ jobs:
       matrix:
         include:
           - os: ubuntu-24.04
-            compiler: gcc-13
-            cc: gcc-13
-            cxx: g++-13
-          - os: ubuntu-24.04
             compiler: gcc-14
             cc: gcc-14
             cxx: g++-14
@@ -58,9 +54,13 @@ jobs:
       - name: Install Ninja on macOS
         if: runner.os == 'macOS'
         run: brew install ninja
+      - name: Set up CMake 3.30
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: '~3.30.0'
       - name: Install toolchain on Ubuntu
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y ninja-build clang-18 g++-13 g++-14
+        run: sudo apt-get update && sudo apt-get install -y ninja-build clang-18 g++-14
       - name: Configure (Linux/macOS)
         if: runner.os != 'Windows'
         env:
@@ -84,6 +84,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - name: Set up CMake 3.30
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: '~3.30.0'
       - name: Install clang toolchain
         run: sudo apt-get update && sudo apt-get install -y clang-18 clang-tidy-18 ninja-build
       - name: Set up vcpkg
