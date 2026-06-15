@@ -1,7 +1,12 @@
 include(CheckIPOSupported)
 
 function(cpp_package_boilerplate_apply_target_options target_name)
-    target_compile_features(${target_name} PUBLIC cxx_std_${CMAKE_CXX_STANDARD})
+    set_target_properties(
+        ${target_name}
+        PROPERTIES
+            CXX_STANDARD ${CMAKE_CXX_STANDARD}
+            CXX_STANDARD_REQUIRED ON
+            CXX_EXTENSIONS OFF)
 
     if(MSVC)
         target_compile_options(${target_name} PRIVATE /W4 /WX /permissive- /Zc:__cplusplus)
