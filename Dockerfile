@@ -3,16 +3,11 @@ FROM ubuntu:24.04 AS builder
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates gpg wget \
-    && wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc \
-       | gpg --dearmor -o /usr/share/keyrings/kitware-archive-keyring.gpg \
-    && echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ noble main' \
-       > /etc/apt/sources.list.d/kitware.list \
-    && apt-get update \
     && apt-get install -y --no-install-recommends \
-        cmake \
         g++-14 \
         ninja-build \
+        python3-pip \
+    && pip3 install --break-system-packages cmake \
     && rm -rf /var/lib/apt/lists/*
 
 ENV CC=gcc-14 CXX=g++-14

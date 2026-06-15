@@ -16,10 +16,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Set up CMake 3.31
+      - name: Set up CMake (latest)
         uses: lukka/get-cmake@latest
         with:
-          cmakeVersion: '~3.31.0'
+          cmakeVersion: 'latest'
       - name: Install docs toolchain
         run: sudo apt-get update && sudo apt-get install -y doxygen graphviz ninja-build g++-14
       - name: Configure docs
