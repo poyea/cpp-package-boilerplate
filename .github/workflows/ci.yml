@@ -23,13 +23,13 @@ jobs:
       matrix:
         include:
           - os: ubuntu-24.04
-            compiler: gcc-14
-            cc: gcc-14
-            cxx: g++-14
+            compiler: gcc-16
+            cc: gcc-16
+            cxx: g++-16
           - os: ubuntu-24.04
-            compiler: clang-18
-            cc: clang-18
-            cxx: clang++-18
+            compiler: clang-22
+            cc: clang-22
+            cxx: clang++-22
           - os: macos-15
             compiler: apple-clang
             cc: clang
@@ -60,7 +60,7 @@ jobs:
           cmakeVersion: 'latest'
       - name: Install toolchain on Ubuntu
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y ninja-build clang-18 g++-14
+        run: sudo apt-get update && sudo apt-get install -y ninja-build clang-22 g++-16
       - name: Configure (Linux/macOS)
         if: runner.os != 'Windows'
         env:
@@ -89,15 +89,15 @@ jobs:
         with:
           cmakeVersion: 'latest'
       - name: Install clang toolchain
-        run: sudo apt-get update && sudo apt-get install -y clang-18 clang-tidy-18 ninja-build
+        run: sudo apt-get update && sudo apt-get install -y clang-22 clang-tidy-22 ninja-build
       - name: Set up vcpkg
         uses: lukka/run-vcpkg@v11
         with:
           vcpkgJsonGlob: vcpkg.json
       - name: Configure clang-tidy build
         env:
-          CC: clang-18
-          CXX: clang++-18
+          CC: clang-22
+          CXX: clang++-22
         run: cmake -S . -B build/tidy -G Ninja -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake -DCPP_PACKAGE_BOILERPLATE_BUILD_BENCHMARKS=OFF -DCPP_PACKAGE_BOILERPLATE_BUILD_DOCS=OFF -DCPP_PACKAGE_BOILERPLATE_ENABLE_CLANG_TIDY=ON
       - name: Build with clang-tidy
         run: cmake --build build/tidy --parallel

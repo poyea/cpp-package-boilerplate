@@ -4,13 +4,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        g++-14 \
+        g++-16 \
         ninja-build \
         python3-pip \
     && pip3 install --break-system-packages cmake \
     && rm -rf /var/lib/apt/lists/*
 
-ENV CC=gcc-14 CXX=g++-14
+ENV CC=gcc-16 CXX=g++-16
 
 WORKDIR /workspace
 COPY . .
