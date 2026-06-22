@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if ! command -v apt-get >/dev/null 2>&1; then
+if ! command -v apt >/dev/null 2>&1; then
     echo "this script currently supports apt-based environments only" >&2
     exit 1
 fi
 
-sudo apt-get update
-sudo apt-get install -y \
+echo "removing and install latest cmake..."
+sudo apt remove -y cmake
+pip install cmake --upgrade
+
+sudo apt install -y \
     build-essential \
     clang \
     clang-format \
     clang-tidy \
-    cmake \
     doxygen \
     gdb \
     git-lfs \

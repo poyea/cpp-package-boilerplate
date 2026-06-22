@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 if(MSVC)
     add_compile_options(/std:c++latest)
     set(CMAKE_CXX_STANDARD 23)
@@ -52,7 +53,7 @@ include(cmake/CompilerOptions.cmake)
 if(CPP_PACKAGE_BOILERPLATE_ENABLE_CLANG_TIDY)
     find_program(
         CPP_PACKAGE_BOILERPLATE_CLANG_TIDY_EXE
-        NAMES clang-tidy clang-tidy-20 clang-tidy-19 clang-tidy-18 clang-tidy-17
+        NAMES clang-tidy clang-tidy-22 clang-tidy-21 clang-tidy-20 clang-tidy-19 clang-tidy-18 clang-tidy-17
         REQUIRED)
     set(
         CMAKE_CXX_CLANG_TIDY
@@ -60,6 +61,7 @@ if(CPP_PACKAGE_BOILERPLATE_ENABLE_CLANG_TIDY)
         CACHE STRING
         "clang-tidy command"
         FORCE)
+    set(CMAKE_CXX_CLANG_TIDY_EXPORT_FIXES_DIR "${CMAKE_BINARY_DIR}/__clang-tidy-fixes")
     message(STATUS "clang-tidy enabled: ${CPP_PACKAGE_BOILERPLATE_CLANG_TIDY_EXE}")
 endif()
 
