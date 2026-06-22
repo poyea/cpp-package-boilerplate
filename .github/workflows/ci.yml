@@ -70,7 +70,7 @@ jobs:
         env:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
-        run: cmake -S . -B build -G Ninja "-DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" -DCPP_PACKAGE_BOILERPLATE_BUILD_BENCHMARKS=OFF -DCPP_PACKAGE_BOILERPLATE_BUILD_DOCS=OFF
+        run: cmake -S . -B build -G Ninja "-DCMAKE_CXX_COMPILER=/usr/bin/g++-16 -DCMAKE_C_COMPILER=/usr/bin/gcc-16 -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake" -DCPP_PACKAGE_BOILERPLATE_BUILD_BENCHMARKS=OFF -DCPP_PACKAGE_BOILERPLATE_BUILD_DOCS=OFF
       - name: Configure (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
