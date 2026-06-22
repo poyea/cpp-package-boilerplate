@@ -7,7 +7,7 @@ if ! command -v apt >/dev/null 2>&1; then
 fi
 
 echo "removing and install latest cmake..."
-sudo apt remove -y cmake
+sudo apt remove -y cmake || true
 pip install cmake --upgrade
 
 sudo apt install -y \
