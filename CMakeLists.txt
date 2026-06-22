@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 4.3)
 
 project(
     cpp_package_boilerplate
-    VERSION 0.1.0
+    VERSION 0.1.4
     DESCRIPTION "Modern C++ package boilerplate"
     LANGUAGES CXX)
 
