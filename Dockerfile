@@ -41,16 +41,22 @@ FROM ubuntu:26.04 AS runtime
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# A C++26 binary from GCC 16.1 needs that release's libstdc++ at run time, and
-# stock 26.04 ships an older one. Same sid pin as the builder, runtime libraries
-# only -- no compiler in the final image.
+# A C++26 binary from GCC 16 needs that release's libstdc++ at run time, and
+# stock 26.04 ships an older snapshot of it.
+#
+# The pin list is identical to the builder's on purpose. Trimming it to just
+# the two libraries being installed is what broke this stage: sid's libstdc++6
+# and libgcc-s1 declare Depends: gcc-16-base (= <same version>), and with
+# gcc-16-base left outside the 990 pin apt held it at Ubuntu's snapshot and
+# reported unmet dependencies. Only the install list needs to be narrow -- no
+# compiler lands in the final image regardless of what the pin permits.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         debian-archive-keyring \
     && echo "deb [signed-by=/usr/share/keyrings/debian-archive-keyring.gpg] http://deb.debian.org/debian sid main" \
         > /etc/apt/sources.list.d/debian-sid.list \
-    && printf 'Package: *\nPin: release o=Debian\nPin-Priority: 100\n\nPackage: libstdc++6 libgcc-s1\nPin: release o=Debian\nPin-Priority: 990\n' \
+    && printf 'Package: *\nPin: release o=Debian\nPin-Priority: 100\n\nPackage: gcc-16 gcc-16-* g++-16 g++-16-* cpp-16 cpp-16-* gcc-16-base libgcc-16-dev libstdc++-16-dev libstdc++6 libgcc-s1 libgomp1 libitm1 libatomic1 libquadmath0 libcc1-0 libasan8 libubsan1 liblsan0 libtsan2 libhwasan0\nPin: release o=Debian\nPin-Priority: 990\n' \
         > /etc/apt/preferences.d/debian \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
