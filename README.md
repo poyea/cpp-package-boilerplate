@@ -19,7 +19,7 @@ Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainer
 | Tool | Minimum version | Purpose |
 |---|---|---|
 | CMake | 4.3 | Build system |
-| GCC | 14 | C++ compiler (Linux/Windows) |
+| GCC | 16.1 | C++ compiler (Linux/Windows) |
 | Clang | 18 | C++ compiler (alternative) |
 | AppleClang | 16 | C++ compiler (macOS) |
 | MSVC | 19.40 (VS 2022 17.10) | C++ compiler (Windows) |
