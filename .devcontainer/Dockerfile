@@ -6,10 +6,9 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         ccache \
-        clang \
-        clang++ \
-        clang-format \
-        clang-tidy \
+        clang-22 \
+        clang-format-22 \
+        clang-tidy-22 \
         curl \
         doxygen \
         g++ \
@@ -17,13 +16,16 @@ RUN apt-get update \
         git \
         git-lfs \
         graphviz \
-        lld \
-        lldb \
+        lld-22 \
+        lldb-22 \
         ninja-build \
         pkg-config \
         python3 \
         python3-pip \
         valgrind \
+    && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-22 100 \
+    && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-22 100 \
+    && update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-22 100 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --break-system-packages "cmake>=4.3"
