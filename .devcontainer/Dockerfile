@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/base:ubuntu-26.04
+FROM mcr.microsoft.com/devcontainers/cpp:3-ubuntu26.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -7,9 +7,9 @@ RUN apt-get update \
         build-essential \
         ccache \
         clang \
+        clang++ \
         clang-format \
         clang-tidy \
-        cmake \
         curl \
         doxygen \
         g++ \
@@ -25,6 +25,8 @@ RUN apt-get update \
         python3-pip \
         valgrind \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --break-system-packages "cmake>=4.3"
 
 # The distro default g++ is below the 16.1 floor, so configuring in the
 # container would fail the version gate. Same narrow sid pin as CI and the
