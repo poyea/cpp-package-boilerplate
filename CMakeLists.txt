@@ -115,3 +115,25 @@ endif()
 if(CPP_PACKAGE_BOILERPLATE_BUILD_DOCS)
     add_subdirectory(docs)
 endif()
+
+install(FILES LICENSE README.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
+
+if(PROJECT_IS_TOP_LEVEL)
+    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}" default_package_target)
+    set(
+        CPP_PACKAGE_BOILERPLATE_PACKAGE_TARGET
+        "${default_package_target}"
+        CACHE STRING
+        "Platform name used in the package file name")
+
+    set(CPACK_PACKAGE_NAME "cpp-package-boilerplate")
+    set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPP_PACKAGE_BOILERPLATE_PACKAGE_TARGET}")
+    set(CPACK_VERBATIM_VARIABLES YES)
+    if(WIN32)
+        set(CPACK_GENERATOR ZIP)
+    else()
+        set(CPACK_GENERATOR TGZ)
+    endif()
+
+    include(CPack)
+endif()

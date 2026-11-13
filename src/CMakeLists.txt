@@ -1,3 +1,5 @@
+include(CMakePackageConfigHelpers)
+
 set(public_headers
     ${PROJECT_SOURCE_DIR}/include/cpp_package_boilerplate/package.hpp
     ${PROJECT_BINARY_DIR}/include/cpp_package_boilerplate/version.hpp)
@@ -44,6 +46,34 @@ if(CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY)
     endif()
 
     add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+
+    set(package_config_dir ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+    set(package_version_options COMPATIBILITY SameMajorVersion)
+    if(CPP_PACKAGE_BOILERPLATE_HEADER_ONLY)
+        list(APPEND package_version_options ARCH_INDEPENDENT)
+    endif()
+
+    configure_package_config_file(
+        ${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in
+        ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+        INSTALL_DESTINATION ${package_config_dir})
+    write_basic_package_version_file(
+        ${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        ${package_version_options})
+
+    install(
+        TARGETS ${PROJECT_NAME}
+        EXPORT ${PROJECT_NAME}Targets
+        FILE_SET HEADERS)
+    install(
+        EXPORT ${PROJECT_NAME}Targets
+        NAMESPACE ${PROJECT_NAME}::
+        DESTINATION ${package_config_dir})
+    install(
+        FILES
+            ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+            ${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        DESTINATION ${package_config_dir})
 endif()
 
 if(CPP_PACKAGE_BOILERPLATE_BUILD_CLI)
@@ -61,4 +91,6 @@ if(CPP_PACKAGE_BOILERPLATE_BUILD_CLI)
     endif()
 
     cpp_package_boilerplate_apply_target_options(${PROJECT_NAME}_cli)
+
+    install(TARGETS ${PROJECT_NAME}_cli)
 endif()
