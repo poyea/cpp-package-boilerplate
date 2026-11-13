@@ -1,5 +1,6 @@
 set(public_headers
-    ${PROJECT_SOURCE_DIR}/include/cpp_package_boilerplate/package.hpp)
+    ${PROJECT_SOURCE_DIR}/include/cpp_package_boilerplate/package.hpp
+    ${PROJECT_BINARY_DIR}/include/cpp_package_boilerplate/version.hpp)
 
 if(CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY)
     if(CPP_PACKAGE_BOILERPLATE_HEADER_ONLY)
@@ -15,12 +16,13 @@ if(CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY)
             ${PROJECT_NAME}
             INTERFACE
                 $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+                $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
         target_sources(
             ${PROJECT_NAME}
             INTERFACE
                 FILE_SET HEADERS
-                BASE_DIRS ${PROJECT_SOURCE_DIR}/include
+                BASE_DIRS ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
                 FILES ${public_headers})
     else()
         add_library(${PROJECT_NAME})
@@ -30,12 +32,13 @@ if(CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY)
                 mylib.cpp
             PUBLIC
                 FILE_SET HEADERS
-                BASE_DIRS ${PROJECT_SOURCE_DIR}/include
+                BASE_DIRS ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
                 FILES ${public_headers})
         target_include_directories(
             ${PROJECT_NAME}
             PUBLIC
                 $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+                $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>
                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
         cpp_package_boilerplate_apply_target_options(${PROJECT_NAME})
     endif()
@@ -49,7 +52,11 @@ if(CPP_PACKAGE_BOILERPLATE_BUILD_CLI)
     if(CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY)
         target_link_libraries(${PROJECT_NAME}_cli PRIVATE ${PROJECT_NAME})
     else()
-        target_include_directories(${PROJECT_NAME}_cli PRIVATE ${PROJECT_SOURCE_DIR}/include)
+        target_include_directories(
+            ${PROJECT_NAME}_cli
+            PRIVATE
+                ${PROJECT_SOURCE_DIR}/include
+                ${PROJECT_BINARY_DIR}/include)
         target_sources(${PROJECT_NAME}_cli PRIVATE mylib.cpp)
     endif()
 

@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 4.3)
 
+file(READ "${CMAKE_CURRENT_LIST_DIR}/vcpkg.json" manifest)
+string(JSON manifest_version GET "${manifest}" version)
+
 project(
     cpp_package_boilerplate
-    VERSION 0.1.4
+    VERSION ${manifest_version}
     DESCRIPTION "Modern C++ package boilerplate"
     LANGUAGES CXX)
 
@@ -49,6 +52,11 @@ elseif(MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.40)
 endif()
 
 include(cmake/CompilerOptions.cmake)
+
+configure_file(
+    include/cpp_package_boilerplate/version.hpp.in
+    ${PROJECT_BINARY_DIR}/include/cpp_package_boilerplate/version.hpp
+    @ONLY)
 
 if(CPP_PACKAGE_BOILERPLATE_ENABLE_CLANG_TIDY)
     find_program(
