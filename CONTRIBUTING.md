@@ -18,3 +18,20 @@
 - Run clang-tidy for non-trivial C++ changes.
 - Keep public headers documented and stable.
 - Use `bash scripts/build.sh --profile perf` or `bash scripts/build.sh --profile callgrind` when investigating regressions.
+
+## Releasing
+
+The version lives in `vcpkg.json` and nowhere else.
+
+1. Bump `version` in `vcpkg.json` and merge that change.
+2. Rehearse the release with `gh workflow run release.yml`.
+   A manual run builds, packages and checksums every target and keeps the result as workflow artifacts, without publishing anything.
+3. Tag the commit as `v<version>` and push the tag.
+   The release workflow refuses a tag that does not match `vcpkg.json`.
+
+A tag of the form `v1.2.3` is published as a stable release.
+Anything with a suffix, such as `v1.2.3-rc.1`, is published as a prerelease.
+
+Release notes are generated from merged pull requests and grouped by label, as configured in `.github/release.yml`.
+
+Set the repository variable `PUBLISH_DOCKER_IMAGE` to `true` to also push a multi-arch image to GitHub Container Registry on each release.

@@ -4,20 +4,99 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
-  build-release-artifacts:
+  plan:
     runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+      publish: ${{ steps.plan.outputs.publish }}
+      prerelease: ${{ steps.plan.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve version and release kind
+        id: plan
+        run: |
+          version="$(jq -r .version vcpkg.json)"
+          publish=false
+          prerelease=false
+
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            publish=true
+            tag_version="${GITHUB_REF_NAME#v}"
+
+            if [[ "${tag_version%%-*}" != "${version}" ]]; then
+              echo "::error::tag ${GITHUB_REF_NAME} does not match version ${version} in vcpkg.json"
+              exit 1
+            fi
+
+            if [[ ! "${GITHUB_REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              prerelease=true
+            fi
+          fi
+
+          {
+            echo "version=${version}"
+            echo "publish=${publish}"
+            echo "prerelease=${prerelease}"
+          } >> "${GITHUB_OUTPUT}"
+
+  package:
+    needs: plan
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-24.04
+            cc: gcc-16
+            cxx: g++-16
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04-arm
+            cc: gcc-16
+            cxx: g++-16
+          - target: x86_64-apple-darwin
+            os: macos-15
+            cc: clang
+            cxx: clang++
+            cmake_args: -DCMAKE_OSX_ARCHITECTURES=x86_64
+          - target: aarch64-apple-darwin
+            os: macos-15
+            cc: clang
+            cxx: clang++
+            cmake_args: -DCMAKE_OSX_ARCHITECTURES=arm64
+          - target: x86_64-pc-windows-msvc
+            os: windows-2022
+            cc: cl
+            cxx: cl
+            msvc_arch: x64
+          - target: aarch64-pc-windows-msvc
+            os: windows-2022
+            cc: cl
+            cxx: cl
+            msvc_arch: amd64_arm64
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up CMake (latest)
         uses: lukka/get-cmake@latest
         with:
           cmakeVersion: 'latest'
-      - name: Install toolchain
+      - name: Set up MSVC developer shell
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.msvc_arch }}
+      - name: Install toolchain on Ubuntu
+        if: runner.os == 'Linux'
         run: |
           # ubuntu-toolchain-r/test only carries pre-release GCC 16 snapshots
           # (16.0.x), so install the 16.1 release from Debian sid, pinned narrowly.
@@ -33,16 +112,112 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends gcc-16 g++-16 ninja-build
           g++-16 --version
-      - name: Configure release build
+      - name: Package
         env:
-          CC: gcc-16
-          CXX: g++-16
-        run: cmake -S . -B build/release -G Ninja -DCMAKE_BUILD_TYPE=Release -DCPP_PACKAGE_BOILERPLATE_BUILD_TESTS=OFF -DCPP_PACKAGE_BOILERPLATE_BUILD_BENCHMARKS=OFF -DCPP_PACKAGE_BOILERPLATE_BUILD_DOCS=OFF
-      - name: Build release artifacts
-        run: cmake --build build/release --parallel
-      - name: Package artifacts
-        run: tar -czf cpp-package-boilerplate-${GITHUB_REF_NAME}.tar.gz -C build/release .
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: bash scripts/package.sh ${{ matrix.target }} ${{ matrix.cmake_args }}
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: |
+            build/package/*.tar.gz
+            build/package/*.zip
+          if-no-files-found: error
+
+  checksum:
+    needs: package
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download archives
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Create checksums
+        run: |
+          cd dist
+          sha256sum -- * > ../SHA256SUMS
+          cat ../SHA256SUMS
+      - name: Upload checksums
+        uses: actions/upload-artifact@v4
+        with:
+          name: SHA256SUMS
+          path: SHA256SUMS
+
+  publish:
+    if: needs.plan.outputs.publish == 'true'
+    needs:
+      - plan
+      - checksum
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Download archives and checksums
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          files: cpp-package-boilerplate-${{ github.ref_name }}.tar.gz
+          files: dist/*
+          prerelease: ${{ needs.plan.outputs.prerelease }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+
+  docker:
+    if: needs.plan.outputs.publish == 'true' && vars.PUBLISH_DOCKER_IMAGE == 'true'
+    needs:
+      - plan
+      - publish
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Linux archives
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*-unknown-linux-gnu'
+          path: dist
+          merge-multiple: true
+      - name: Extract binaries
+        run: |
+          for platform in amd64:x86_64 arm64:aarch64; do
+            package="cpp-package-boilerplate-${platform#*:}-unknown-linux-gnu"
+            mkdir -p "image/${platform%:*}"
+            tar -xzf "dist/${package}.tar.gz" \
+              -C "image/${platform%:*}" \
+              --strip-components=2 \
+              "${package}/bin/cpp_package_boilerplate_cli"
+          done
+      - name: Determine tags
+        id: tags
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          tags="${image}:${GITHUB_REF_NAME#v}"
+          if [[ "${{ needs.plan.outputs.prerelease }}" == "false" ]]; then
+            tags="${tags},${image}:latest"
+          fi
+          echo "tags=${tags}" >> "${GITHUB_OUTPUT}"
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: image
+          file: Dockerfile
+          target: release
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}

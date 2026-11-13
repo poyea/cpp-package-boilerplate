@@ -36,6 +36,14 @@ RUN cmake -S . -B build -G Ninja \
         -DCPP_PACKAGE_BOILERPLATE_STATIC_RUNTIME=ON \
     && cmake --build build --parallel
 
+FROM scratch AS release
+
+ARG TARGETARCH
+
+COPY ${TARGETARCH}/cpp_package_boilerplate_cli /usr/local/bin/cpp_package_boilerplate
+
+ENTRYPOINT ["/usr/local/bin/cpp_package_boilerplate"]
+
 FROM scratch AS runtime
 
 COPY --from=builder /workspace/build/src/cpp_package_boilerplate_cli /usr/local/bin/cpp_package_boilerplate
