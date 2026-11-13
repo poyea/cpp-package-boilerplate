@@ -1,4 +1,4 @@
-# cpp-package-boilerplate [![ci](https://github.com/poyea/cpp-package-boilerplate/actions/workflows/ci.yml/badge.svg)](https://github.com/poyea/cpp-package-boilerplate/actions/workflows/ci.yml)
+# cpp-package-boilerplate [![ci](https://github.com/poyea/cpp-package-boilerplate/actions/workflows/ci.yml/badge.svg)](https://github.com/poyea/cpp-package-boilerplate/actions/workflows/ci.yml) [![release](https://img.shields.io/github/v/release/poyea/cpp-package-boilerplate)](https://github.com/poyea/cpp-package-boilerplate/releases/latest) [![downloads](https://img.shields.io/github/downloads/poyea/cpp-package-boilerplate/total)](https://github.com/poyea/cpp-package-boilerplate/releases)
 
 Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainers, Docker, and GitHub Actions.
 
@@ -10,6 +10,8 @@ Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainer
 - Doxygen documentation generation.
 - Dev container and Codespaces setup with a repository-owned toolchain.
 - Docker build support for a runnable runtime image.
+- Install rules, a `find_package()` config and CPack archives.
+- Tag-driven releases with per-platform archives, checksums and an install script.
 - Clang-format, strict warnings, sanitizers, and release LTO.
 
 ## Prerequisites
@@ -50,7 +52,7 @@ After installation, export `VCPKG_ROOT` if needed:
 export VCPKG_ROOT="${HOME}/.local/vcpkg"
 ```
 
-**Dev container / Codespaces:** all tools are pre-installed — no manual setup needed.
+**Dev container / Codespaces:** all tools are pre-installed, no manual setup needed.
 
 ## Quick start
 
@@ -72,6 +74,59 @@ Or use the helper script:
 
 `bash scripts/build.sh --preset debug --test`
 
+## Installing a release
+
+Each [release](https://github.com/poyea/cpp-package-boilerplate/releases) ships a prebuilt archive per platform, containing the CLI, the static library, its headers and a CMake package config.
+
+| Target | Archive |
+|---|---|
+| Linux x86_64 | `cpp-package-boilerplate-x86_64-unknown-linux-gnu.tar.gz` |
+| Linux arm64 | `cpp-package-boilerplate-aarch64-unknown-linux-gnu.tar.gz` |
+| macOS x86_64 | `cpp-package-boilerplate-x86_64-apple-darwin.tar.gz` |
+| macOS arm64 | `cpp-package-boilerplate-aarch64-apple-darwin.tar.gz` |
+| Windows x86_64 | `cpp-package-boilerplate-x86_64-pc-windows-msvc.zip` |
+| Windows arm64 | `cpp-package-boilerplate-aarch64-pc-windows-msvc.zip` |
+
+The Linux CLI is fully statically linked, so it runs on any distribution.
+
+### Install script
+
+The install script downloads the archive for the current platform, verifies its checksum and copies the CLI into a directory of your choice:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSfL https://raw.githubusercontent.com/poyea/cpp-package-boilerplate/main/scripts/install.sh | bash -s -- --to ~/.local/bin
+```
+
+Pass `--tag v1.2.3` to install a specific release instead of the latest one, and `--force` to overwrite an existing binary.
+On Windows, run it from Git Bash.
+
+### Verifying a download
+
+Every release includes a `SHA256SUMS` file.
+To verify archives downloaded by hand, place it next to them and run:
+
+```bash
+sha256sum --ignore-missing --check SHA256SUMS
+```
+
+### Using the library from CMake
+
+Extract an archive, or run `cmake --install build/release --prefix <prefix>` on your own build, then point CMake at that prefix:
+
+```cmake
+find_package(cpp_package_boilerplate 0.1 REQUIRED)
+target_link_libraries(my_app PRIVATE cpp_package_boilerplate::cpp_package_boilerplate)
+```
+
+```bash
+cmake -S . -B build -DCMAKE_PREFIX_PATH=<prefix>
+```
+
+### Release feed
+
+GitHub publishes an [Atom feed of releases](https://github.com/poyea/cpp-package-boilerplate/releases.atom).
+Subscribe to it in any feed reader to be notified of new versions.
+
 ## Project options
 
 Key CMake options:
@@ -82,6 +137,11 @@ Key CMake options:
 - `CPP_PACKAGE_BOILERPLATE_BUILD_TESTS=ON|OFF`
 - `CPP_PACKAGE_BOILERPLATE_BUILD_BENCHMARKS=ON|OFF`
 - `CPP_PACKAGE_BOILERPLATE_BUILD_DOCS=ON|OFF`
+- `CPP_PACKAGE_BOILERPLATE_STATIC_RUNTIME=ON|OFF`
+
+`CPP_PACKAGE_BOILERPLATE_STATIC_RUNTIME` is meant for distribution builds.
+It links the CLI fully statically on Linux and selects the static CRT with MSVC, and has no effect on macOS.
+A fully static glibc binary cannot load NSS modules or `dlopen` shared objects, so leave it off if the CLI needs either.
 
 Examples:
 
@@ -100,7 +160,7 @@ cmake -S . -B build/full -G Ninja -DCPP_PACKAGE_BOILERPLATE_BUILD_BENCHMARKS=ON 
 - `benchmarks/`: performance benchmarks
 - `docs/`: Doxygen configuration
 - `.devcontainer/`: development container for VS Code and Codespaces
-- `.github/workflows/`: CI, docs, and Docker automation
+- `.github/workflows/`: CI, docs, Docker, and release automation
 - `scripts/`: local developer helpers
 
 ## Formatting
@@ -128,6 +188,15 @@ bash scripts/build.sh --benchmark --benchmark_filter=BM_Add
 bash scripts/build.sh --profile perf
 bash scripts/build.sh --profile callgrind
 ```
+
+## Packaging
+
+```bash
+bash scripts/package.sh x86_64-unknown-linux-gnu
+```
+
+This builds a release with a static runtime and writes the archive to `build/package/`.
+The release workflow runs the same script for every target.
 
 ## Documentation
 

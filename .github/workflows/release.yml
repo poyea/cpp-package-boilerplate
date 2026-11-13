@@ -168,6 +168,27 @@ jobs:
           generate_release_notes: true
           fail_on_unmatched_files: true
 
+  verify-install:
+    needs:
+      - plan
+      - publish
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - macos-15
+          - windows-2022
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the published release
+        run: bash scripts/install.sh --tag "${GITHUB_REF_NAME}" --to "${RUNNER_TEMP}/bin"
+      - name: Check the installed version
+        run: |
+          installed="$("${RUNNER_TEMP}/bin/cpp_package_boilerplate_cli" --version | tr -d '\r')"
+          test "${installed}" = "${{ needs.plan.outputs.version }}"
+
   docker:
     if: needs.plan.outputs.publish == 'true' && vars.PUBLISH_DOCKER_IMAGE == 'true'
     needs:
