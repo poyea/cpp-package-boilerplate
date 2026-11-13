@@ -31,6 +31,7 @@ option(CPP_PACKAGE_BOILERPLATE_BUILD_DOCS "Build API documentation" OFF)
 option(CPP_PACKAGE_BOILERPLATE_ENABLE_IPO "Enable interprocedural optimization for release builds" ON)
 option(CPP_PACKAGE_BOILERPLATE_ENABLE_SANITIZERS "Enable AddressSanitizer and UBSan in debug builds" ON)
 option(CPP_PACKAGE_BOILERPLATE_ENABLE_CLANG_TIDY "Run clang-tidy during compilation" OFF)
+option(CPP_PACKAGE_BOILERPLATE_STATIC_RUNTIME "Link the CLI with no shared runtime library dependencies" OFF)
 option(CPP_PACKAGE_BOILERPLATE_USE_PACKAGE_MANAGER_DEPS "Prefer package manager dependencies over FetchContent" ON)
 
 if(NOT CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY AND NOT CPP_PACKAGE_BOILERPLATE_BUILD_CLI)
@@ -49,6 +50,10 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" AND CMAKE_CXX_COMPILER_VERSIO
     message(FATAL_ERROR "AppleClang 16 or newer is required for the default C++26 configuration.")
 elseif(MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.40)
     message(FATAL_ERROR "MSVC 19.40 (VS 2022 17.10) or newer is required for the default C++26 configuration.")
+endif()
+
+if(CPP_PACKAGE_BOILERPLATE_STATIC_RUNTIME AND MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
 include(cmake/CompilerOptions.cmake)

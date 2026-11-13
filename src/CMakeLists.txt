@@ -92,5 +92,9 @@ if(CPP_PACKAGE_BOILERPLATE_BUILD_CLI)
 
     cpp_package_boilerplate_apply_target_options(${PROJECT_NAME}_cli)
 
+    if(CPP_PACKAGE_BOILERPLATE_STATIC_RUNTIME AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        target_link_options(${PROJECT_NAME}_cli PRIVATE -static)
+    endif()
+
     install(TARGETS ${PROJECT_NAME}_cli)
 endif()
