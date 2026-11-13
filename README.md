@@ -205,7 +205,14 @@ cmake -S . -B build/docs -G Ninja -DCPP_PACKAGE_BOILERPLATE_BUILD_TESTS=OFF -DCP
 cmake --build build/docs --target docs
 ```
 
-The GitHub Pages workflow publishes generated Doxygen output from the default branch.
+The docs workflow builds the documentation on every pull request and on every push to the default branch, so a broken build is caught before it merges.
+It publishes to GitHub Pages only when a stable release is tagged, so the site always describes the latest release while this README describes the default branch.
+
+To publish the documentation for a given ref by hand:
+
+```bash
+gh workflow run docs.yml --field ref=v0.1.5
+```
 
 ## Container workflows
 
