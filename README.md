@@ -143,7 +143,7 @@ gh attestation verify cpp-package-boilerplate-x86_64-unknown-linux-gnu.tar.gz --
 Extract an archive, or run `cmake --install build/release --prefix <prefix>` on your own build, then point CMake at that prefix:
 
 ```cmake
-find_package(cpp_package_boilerplate 0.1 REQUIRED)
+find_package(cpp_package_boilerplate 0.2 REQUIRED)
 target_link_libraries(my_app PRIVATE cpp_package_boilerplate::cpp_package_boilerplate)
 ```
 
@@ -249,7 +249,7 @@ It publishes to GitHub Pages only when a stable release is tagged, so the site a
 To publish the documentation for a given ref by hand:
 
 ```bash
-gh workflow run docs.yml --field ref=v0.1.5
+gh workflow run docs.yml --field ref=v0.2.0
 ```
 
 ## Container workflows
