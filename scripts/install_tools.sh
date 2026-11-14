@@ -33,17 +33,7 @@ else
     echo
     read -r -p "add the pinned Debian sid source? [y/N] " reply
     if [[ "${reply}" == "y" || "${reply}" == "Y" ]]; then
-        sudo apt install -y --no-install-recommends debian-archive-keyring
-
-        echo "deb [signed-by=/usr/share/keyrings/debian-archive-keyring.gpg] http://deb.debian.org/debian sid main" \
-            | sudo tee /etc/apt/sources.list.d/debian-sid.list
-
-        printf 'Package: *\nPin: release o=Debian\nPin-Priority: 100\n\nPackage: gcc-16 gcc-16-* g++-16 g++-16-* cpp-16 cpp-16-* gcc-16-base libgcc-16-dev libstdc++-16-dev libstdc++6 libgcc-s1 libgomp1 libitm1 libatomic1 libquadmath0 libcc1-0 libasan8 libubsan1 liblsan0 libtsan2 libhwasan0\nPin: release o=Debian\nPin-Priority: 990\n' \
-            | sudo tee /etc/apt/preferences.d/debian
-
-        sudo apt update
-        sudo apt install -y --no-install-recommends gcc-16 g++-16
-        g++-16 --version
+        bash "$(dirname "${BASH_SOURCE[0]}")/install_gcc.sh"
     else
         echo "skipped. install GCC 16.1 yourself, or cmake configure will fail" >&2
         echo "the version gate in CMakeLists.txt." >&2
