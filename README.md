@@ -46,11 +46,11 @@ After creating a repository from this template:
 | Tool | Purpose |
 |---|---|
 | clang-format | Code formatting (`scripts/format.sh`) |
-| clang-tidy | Static analysis (`scripts/tidy.sh`) |
+| clang-tidy | Static analysis (`tidy` preset) |
 | vcpkg | C/C++ dependency management for tests and benchmarks |
 | Doxygen + Graphviz | API documentation (`BUILD_DOCS=ON`) |
-| Valgrind | Profiling (`scripts/build.sh --profile callgrind`) |
-| perf | Profiling (`scripts/build.sh --profile perf`, Linux only) |
+| Valgrind | Profiling (`profile` preset) |
+| perf | Profiling (`profile` preset, Linux only) |
 | Docker | Runtime container image |
 
 **Install on Ubuntu/Debian:**
@@ -70,22 +70,31 @@ export VCPKG_ROOT="${HOME}/.local/vcpkg"
 ## Quick start
 
 ```bash
+cmake --workflow --preset debug
+```
+
+A workflow preset configures, builds and tests in one command.
+The steps are also available one at a time:
+
+```bash
 cmake --preset debug
 cmake --build --preset debug
 ctest --preset debug
 ```
 
-Use vcpkg manifest mode:
+| Preset | Build type | What it does |
+|---|---|---|
+| `debug` | Debug | Builds and tests with AddressSanitizer and UBSan |
+| `release` | Release | Builds and tests with LTO |
+| `ci` | RelWithDebInfo | Builds and tests without sanitizers |
+| `benchmarks` | Release | Builds the benchmarks |
+| `profile` | RelWithDebInfo | Builds the benchmarks with debug information |
+| `tidy` | Debug | Builds with clang-tidy on every translation unit |
+| `docs` | Debug | Generates the Doxygen documentation |
 
-```bash
-cmake --preset debug-vcpkg
-cmake --build --preset debug-vcpkg
-ctest --preset debug-vcpkg
-```
-
-Or use the helper script:
-
-`bash scripts/build.sh --preset debug --test`
+Every preset except `docs` has a `-vcpkg` variant, such as `debug-vcpkg`, which takes dependencies from the vcpkg manifest and needs `VCPKG_ROOT`.
+Without it, GoogleTest and Google Benchmark are downloaded at configure time.
+Each preset builds into `build/<preset>`.
 
 ## Installing a release
 
@@ -190,18 +199,23 @@ cmake --build --preset debug --target format-check
 ## Static analysis
 
 ```bash
-bash scripts/tidy.sh
-cmake --preset debug-vcpkg -DCPP_PACKAGE_BOILERPLATE_ENABLE_CLANG_TIDY=ON
-cmake --build --preset debug-vcpkg
+cmake --workflow --preset tidy
 ```
 
 ## Benchmarks and profiling
 
 ```bash
-bash scripts/build.sh --benchmark
-bash scripts/build.sh --benchmark --benchmark_filter=BM_Add
-bash scripts/build.sh --profile perf
-bash scripts/build.sh --profile callgrind
+cmake --workflow --preset benchmarks
+build/benchmarks/benchmarks/cpp_package_boilerplate_benchmarks
+build/benchmarks/benchmarks/cpp_package_boilerplate_benchmarks --benchmark_filter=BM_Add
+```
+
+To profile, build the benchmarks with debug information and run them under a profiler:
+
+```bash
+cmake --workflow --preset profile
+perf record --call-graph dwarf build/profile/benchmarks/cpp_package_boilerplate_benchmarks
+valgrind --tool=callgrind build/profile/benchmarks/cpp_package_boilerplate_benchmarks
 ```
 
 ## Packaging
@@ -216,9 +230,10 @@ The release workflow runs the same script for every target.
 ## Documentation
 
 ```bash
-cmake -S . -B build/docs -G Ninja -DCPP_PACKAGE_BOILERPLATE_BUILD_TESTS=OFF -DCPP_PACKAGE_BOILERPLATE_BUILD_DOCS=ON
-cmake --build build/docs --target docs
+cmake --workflow --preset docs
 ```
+
+The site is written to `build/docs/docs/site/html`.
 
 The docs workflow builds the documentation on every pull request and on every push to the default branch, so a broken build is caught before it merges.
 It publishes to GitHub Pages only when a stable release is tagged, so the site always describes the latest release while this README describes the default branch.

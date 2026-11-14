@@ -12,6 +12,7 @@
             "binaryDir": "${sourceDir}/build/debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_MSVC_DEBUG_INFORMATION_FORMAT": "Embedded",
                 "CPP_PACKAGE_BOILERPLATE_BUILD_BENCHMARKS": "OFF",
                 "CPP_PACKAGE_BOILERPLATE_BUILD_DOCS": "OFF"
             }
@@ -60,6 +61,74 @@
             ],
             "binaryDir": "${sourceDir}/build/ci-vcpkg",
             "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        },
+        {
+            "name": "benchmarks",
+            "inherits": [
+                "debug"
+            ],
+            "binaryDir": "${sourceDir}/build/benchmarks",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CPP_PACKAGE_BOILERPLATE_BUILD_TESTS": "OFF",
+                "CPP_PACKAGE_BOILERPLATE_BUILD_BENCHMARKS": "ON"
+            }
+        },
+        {
+            "name": "benchmarks-vcpkg",
+            "inherits": [
+                "benchmarks"
+            ],
+            "binaryDir": "${sourceDir}/build/benchmarks-vcpkg",
+            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        },
+        {
+            "name": "profile",
+            "inherits": [
+                "benchmarks"
+            ],
+            "binaryDir": "${sourceDir}/build/profile",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "profile-vcpkg",
+            "inherits": [
+                "profile"
+            ],
+            "binaryDir": "${sourceDir}/build/profile-vcpkg",
+            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        },
+        {
+            "name": "tidy",
+            "inherits": [
+                "debug"
+            ],
+            "binaryDir": "${sourceDir}/build/tidy",
+            "cacheVariables": {
+                "CPP_PACKAGE_BOILERPLATE_ENABLE_SANITIZERS": "OFF",
+                "CPP_PACKAGE_BOILERPLATE_ENABLE_CLANG_TIDY": "ON"
+            }
+        },
+        {
+            "name": "tidy-vcpkg",
+            "inherits": [
+                "tidy"
+            ],
+            "binaryDir": "${sourceDir}/build/tidy-vcpkg",
+            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        },
+        {
+            "name": "docs",
+            "inherits": [
+                "debug"
+            ],
+            "binaryDir": "${sourceDir}/build/docs",
+            "cacheVariables": {
+                "CPP_PACKAGE_BOILERPLATE_BUILD_TESTS": "OFF",
+                "CPP_PACKAGE_BOILERPLATE_BUILD_DOCS": "ON"
+            }
         }
     ],
     "buildPresets": [
@@ -86,6 +155,37 @@
         {
             "name": "ci-vcpkg",
             "configurePreset": "ci-vcpkg"
+        },
+        {
+            "name": "benchmarks",
+            "configurePreset": "benchmarks"
+        },
+        {
+            "name": "benchmarks-vcpkg",
+            "configurePreset": "benchmarks-vcpkg"
+        },
+        {
+            "name": "profile",
+            "configurePreset": "profile"
+        },
+        {
+            "name": "profile-vcpkg",
+            "configurePreset": "profile-vcpkg"
+        },
+        {
+            "name": "tidy",
+            "configurePreset": "tidy"
+        },
+        {
+            "name": "tidy-vcpkg",
+            "configurePreset": "tidy-vcpkg"
+        },
+        {
+            "name": "docs",
+            "configurePreset": "docs",
+            "targets": [
+                "docs"
+            ]
         }
     ],
     "testPresets": [
@@ -102,6 +202,229 @@
             "output": {
                 "outputOnFailure": true
             }
+        },
+        {
+            "name": "release",
+            "configurePreset": "release",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "release-vcpkg",
+            "configurePreset": "release-vcpkg",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "ci",
+            "configurePreset": "ci",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "ci-vcpkg",
+            "configurePreset": "ci-vcpkg",
+            "output": {
+                "outputOnFailure": true
+            }
+        }
+    ],
+    "workflowPresets": [
+        {
+            "name": "debug",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "debug"
+                },
+                {
+                    "type": "build",
+                    "name": "debug"
+                },
+                {
+                    "type": "test",
+                    "name": "debug"
+                }
+            ]
+        },
+        {
+            "name": "debug-vcpkg",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "debug-vcpkg"
+                },
+                {
+                    "type": "build",
+                    "name": "debug-vcpkg"
+                },
+                {
+                    "type": "test",
+                    "name": "debug-vcpkg"
+                }
+            ]
+        },
+        {
+            "name": "release",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "release"
+                },
+                {
+                    "type": "build",
+                    "name": "release"
+                },
+                {
+                    "type": "test",
+                    "name": "release"
+                }
+            ]
+        },
+        {
+            "name": "release-vcpkg",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "release-vcpkg"
+                },
+                {
+                    "type": "build",
+                    "name": "release-vcpkg"
+                },
+                {
+                    "type": "test",
+                    "name": "release-vcpkg"
+                }
+            ]
+        },
+        {
+            "name": "ci",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "ci"
+                },
+                {
+                    "type": "build",
+                    "name": "ci"
+                },
+                {
+                    "type": "test",
+                    "name": "ci"
+                }
+            ]
+        },
+        {
+            "name": "ci-vcpkg",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "ci-vcpkg"
+                },
+                {
+                    "type": "build",
+                    "name": "ci-vcpkg"
+                },
+                {
+                    "type": "test",
+                    "name": "ci-vcpkg"
+                }
+            ]
+        },
+        {
+            "name": "benchmarks",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "benchmarks"
+                },
+                {
+                    "type": "build",
+                    "name": "benchmarks"
+                }
+            ]
+        },
+        {
+            "name": "benchmarks-vcpkg",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "benchmarks-vcpkg"
+                },
+                {
+                    "type": "build",
+                    "name": "benchmarks-vcpkg"
+                }
+            ]
+        },
+        {
+            "name": "profile",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "profile"
+                },
+                {
+                    "type": "build",
+                    "name": "profile"
+                }
+            ]
+        },
+        {
+            "name": "profile-vcpkg",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "profile-vcpkg"
+                },
+                {
+                    "type": "build",
+                    "name": "profile-vcpkg"
+                }
+            ]
+        },
+        {
+            "name": "tidy",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "tidy"
+                },
+                {
+                    "type": "build",
+                    "name": "tidy"
+                }
+            ]
+        },
+        {
+            "name": "tidy-vcpkg",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "tidy-vcpkg"
+                },
+                {
+                    "type": "build",
+                    "name": "tidy-vcpkg"
+                }
+            ]
+        },
+        {
+            "name": "docs",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "docs"
+                },
+                {
+                    "type": "build",
+                    "name": "docs"
+                }
+            ]
         }
     ]
 }

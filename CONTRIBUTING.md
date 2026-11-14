@@ -2,13 +2,11 @@
 
 ## Local workflow
 
-1. Configure with `cmake --preset debug`.
-2. Build with `cmake --build --preset debug`.
-3. Run tests with `ctest --preset debug`.
-4. Format with `bash scripts/format.sh`.
-5. Run static analysis with `bash scripts/tidy.sh`.
-6. For dependency-manager validation use `cmake --preset debug-vcpkg` then `cmake --build --preset debug-vcpkg`.
-7. Run benchmarks with `bash scripts/build.sh --benchmark` when performance-sensitive code changes.
+1. Configure, build and test with `cmake --workflow --preset debug`.
+2. Format with `bash scripts/format.sh`.
+3. Run static analysis with `cmake --workflow --preset tidy`.
+4. For dependency-manager validation use `cmake --workflow --preset debug-vcpkg`.
+5. Build the benchmarks with `cmake --workflow --preset benchmarks` and run them when performance-sensitive code changes.
 
 ## Expectations
 
@@ -17,7 +15,7 @@
 - Run formatting before opening a pull request.
 - Run clang-tidy for non-trivial C++ changes.
 - Keep public headers documented and stable.
-- Use `bash scripts/build.sh --profile perf` or `bash scripts/build.sh --profile callgrind` when investigating regressions.
+- Build with `cmake --workflow --preset profile` and run the benchmarks under `perf` or `valgrind --tool=callgrind` when investigating regressions.
 
 ## Releasing
 
