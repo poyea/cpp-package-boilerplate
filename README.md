@@ -131,6 +131,13 @@ To verify archives downloaded by hand, place it next to them and run:
 sha256sum --ignore-missing --check SHA256SUMS
 ```
 
+Every archive also carries a signed build provenance attestation.
+It proves that the release workflow of this repository built the file:
+
+```bash
+gh attestation verify cpp-package-boilerplate-x86_64-unknown-linux-gnu.tar.gz --repo poyea/cpp-package-boilerplate
+```
+
 ### Using the library from CMake
 
 Extract an archive, or run `cmake --install build/release --prefix <prefix>` on your own build, then point CMake at that prefix:
