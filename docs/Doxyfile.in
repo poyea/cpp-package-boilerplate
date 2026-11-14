@@ -10,3 +10,4 @@ INPUT                  = @PROJECT_SOURCE_DIR@/include @PROJECT_SOURCE_DIR@/src
 FILE_PATTERNS          = *.hpp *.h *.cpp
 FULL_PATH_NAMES        = NO
 STRIP_FROM_PATH        = @PROJECT_SOURCE_DIR@
+WARN_AS_ERROR          = FAIL_ON_WARNINGS
