@@ -92,6 +92,15 @@ jobs:
           CXX: ${{ matrix.cxx }}
           CMAKE_CXX_COMPILER_LAUNCHER: ${{ runner.os == 'Windows' && 'sccache' || 'ccache' }}
         run: cmake --workflow --preset debug-vcpkg
+      - name: Build and run benchmarks
+        shell: bash
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+          CMAKE_CXX_COMPILER_LAUNCHER: ${{ runner.os == 'Windows' && 'sccache' || 'ccache' }}
+        run: |
+          cmake --workflow --preset benchmarks-vcpkg
+          build/benchmarks-vcpkg/benchmarks/cpp_package_boilerplate_benchmarks
 
   clang-tidy:
     needs: format
