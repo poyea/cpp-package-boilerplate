@@ -17,7 +17,7 @@ jobs:
   format:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install clang-format
         run: sudo apt-get update && sudo apt-get install -y clang-format
       - name: Check formatting
@@ -53,7 +53,7 @@ jobs:
             cxx: cl
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up vcpkg
         uses: lukka/run-vcpkg@v11
         with:
@@ -110,7 +110,7 @@ jobs:
     needs: format
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Set up CMake (latest)
         uses: lukka/get-cmake@latest
         with:
