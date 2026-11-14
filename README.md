@@ -14,6 +14,19 @@ Modern C++ package boilerplate with CMake, tests, benchmarks, docs, devcontainer
 - Tag-driven releases with per-platform archives, checksums and an install script.
 - Clang-format, strict warnings, sanitizers, and release LTO.
 
+## Using this template
+
+After creating a repository from this template:
+
+1. Rename the project: replace `cpp_package_boilerplate`, `cpp-package-boilerplate` and `CPP_PACKAGE_BOILERPLATE` throughout, including the `include/cpp_package_boilerplate/` directory.
+2. Point the links at your repository: the badges and URLs in this README, and `repo` in `scripts/install.sh`.
+3. Set the starting `version` in `vcpkg.json`.
+4. In the repository settings, set Pages to deploy from GitHub Actions.
+5. Set the repository homepage to the Pages URL, so the documentation is one click from the repository page.
+6. Enable Discussions if you want a support channel that is separate from the issue tracker.
+7. Create the `breaking` label, which the generated release notes use alongside the default `enhancement`, `bug` and `documentation` labels.
+8. Set the repository variable `PUBLISH_DOCKER_IMAGE` to `true` if releases should push an image to GitHub Container Registry.
+
 ## Prerequisites
 
 **Required:**
@@ -122,6 +135,8 @@ target_link_libraries(my_app PRIVATE cpp_package_boilerplate::cpp_package_boiler
 cmake -S . -B build -DCMAKE_PREFIX_PATH=<prefix>
 ```
 
+The Windows archives are built against the static CRT (`/MT`), so a consumer has to use the same runtime.
+
 ### Release feed
 
 GitHub publishes an [Atom feed of releases](https://github.com/poyea/cpp-package-boilerplate/releases.atom).
@@ -218,6 +233,24 @@ gh workflow run docs.yml --field ref=v0.1.5
 
 - Dev container: open the repository in a compatible devcontainer client or GitHub Codespaces.
 - Runtime image: `docker build -t cpp-package-boilerplate:latest .`
+
+## Stability
+
+Releases follow [Semantic Versioning](https://semver.org).
+The public API is everything declared in the headers under `include/`, plus the exported CMake target `cpp_package_boilerplate::cpp_package_boilerplate`.
+
+- A patch release only fixes bugs.
+- A minor release may add to the public API, but does not remove or change what is already there.
+- A major release may break source compatibility, and its release notes list every breaking change under a "Breaking" heading.
+
+While the version is below 1.0, a minor release may also contain breaking changes.
+
+The CMake package config enforces this: `find_package(cpp_package_boilerplate 1.2)` accepts any installed 1.x at or above 1.2, and rejects 2.x.
+
+There is no ABI stability guarantee.
+The library is distributed as a static archive, so rebuild and relink against each new version.
+
+The CLI, its flags and its output are covered by the same rules as the API.
 
 ## License
 
