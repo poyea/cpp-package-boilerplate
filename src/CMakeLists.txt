@@ -4,6 +4,8 @@ set(public_headers
     ${PROJECT_SOURCE_DIR}/include/cpp_package_boilerplate/package.hpp
     ${PROJECT_BINARY_DIR}/include/cpp_package_boilerplate/version.hpp)
 
+set(library_sources mylib.cpp)
+
 if(CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY)
     if(CPP_PACKAGE_BOILERPLATE_HEADER_ONLY)
         add_library(${PROJECT_NAME} INTERFACE)
@@ -31,7 +33,7 @@ if(CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY)
         target_sources(
             ${PROJECT_NAME}
             PRIVATE
-                mylib.cpp
+                ${library_sources}
             PUBLIC
                 FILE_SET HEADERS
                 BASE_DIRS ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
@@ -79,7 +81,19 @@ endif()
 if(CPP_PACKAGE_BOILERPLATE_BUILD_CLI)
     add_executable(${PROJECT_NAME}_cli main.cpp)
 
-    if(CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY)
+    set(cli_uses_static_crt OFF)
+    if(CPP_PACKAGE_BOILERPLATE_STATIC_RUNTIME AND MSVC)
+        set(cli_uses_static_crt ON)
+        set_property(
+            TARGET ${PROJECT_NAME}_cli
+            PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    endif()
+
+    # Objects built against the DLL CRT cannot be linked into a static CRT
+    # executable, so in that case the CLI compiles the library sources itself.
+    if(
+        CPP_PACKAGE_BOILERPLATE_HEADER_ONLY
+        OR (CPP_PACKAGE_BOILERPLATE_BUILD_LIBRARY AND NOT cli_uses_static_crt))
         target_link_libraries(${PROJECT_NAME}_cli PRIVATE ${PROJECT_NAME})
     else()
         target_include_directories(
@@ -87,7 +101,7 @@ if(CPP_PACKAGE_BOILERPLATE_BUILD_CLI)
             PRIVATE
                 ${PROJECT_SOURCE_DIR}/include
                 ${PROJECT_BINARY_DIR}/include)
-        target_sources(${PROJECT_NAME}_cli PRIVATE mylib.cpp)
+        target_sources(${PROJECT_NAME}_cli PRIVATE ${library_sources})
     endif()
 
     cpp_package_boilerplate_apply_target_options(${PROJECT_NAME}_cli)

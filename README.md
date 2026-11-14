@@ -151,7 +151,7 @@ target_link_libraries(my_app PRIVATE cpp_package_boilerplate::cpp_package_boiler
 cmake -S . -B build -DCMAKE_PREFIX_PATH=<prefix>
 ```
 
-The Windows archives are built against the static CRT (`/MT`), so a consumer has to use the same runtime.
+The Windows library is built against the DLL CRT (`/MD`), which is the CMake default, so it links into an ordinary project.
 
 ### Release feed
 
@@ -171,7 +171,8 @@ Key CMake options:
 - `CPP_PACKAGE_BOILERPLATE_STATIC_RUNTIME=ON|OFF`
 
 `CPP_PACKAGE_BOILERPLATE_STATIC_RUNTIME` is meant for distribution builds.
-It links the CLI fully statically on Linux and selects the static CRT with MSVC, and has no effect on macOS.
+It links the CLI fully statically on Linux and against the static CRT (`/MT`) with MSVC, and has no effect on macOS.
+The library itself is not affected.
 A fully static glibc binary cannot load NSS modules or `dlopen` shared objects, so leave it off if the CLI needs either.
 
 Examples:

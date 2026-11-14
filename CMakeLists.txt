@@ -52,10 +52,6 @@ elseif(MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.40)
     message(FATAL_ERROR "MSVC 19.40 (VS 2022 17.10) or newer is required for the default C++26 configuration.")
 endif()
 
-if(CPP_PACKAGE_BOILERPLATE_STATIC_RUNTIME AND MSVC)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-endif()
-
 include(cmake/CompilerOptions.cmake)
 
 configure_file(
