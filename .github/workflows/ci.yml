@@ -22,8 +22,8 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y clang-format
       - name: Check formatting
         run: bash scripts/format.sh --check
-      - name: Check install script
-        run: shellcheck scripts/install.sh
+      - name: Check shell scripts
+        run: shellcheck scripts/*.sh .devcontainer/post-create.sh
 
   build-and-test:
     needs: format
